@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zcbigdata.mybits_demo.mapper.HateMapper">
+
+    <resultMap id="BaseResultMap" type="cn.zcbigdata.mybits_demo.entity.Hate">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="dp_id" jdbcType="INTEGER" property="dpId"/>
+    </resultMap>
+
+    <!--添加-->
+    <insert id="addHate" keyProperty="id" useGeneratedKeys="true"
+            parameterType="cn.zcbigdata.mybits_demo.entity.Hate">
+        INSERT INTO hate(user_id,dp_id)
+        VALUES (#{userId},#{dpId});
+    </insert>
+
+    <!--根据id删除-->
+    <delete id="deleteHateById" parameterType="java.lang.Integer">
+        DELETE
+        FROM hate
+        WHERE id = #{id};
+    </delete>
+
+    <!--修改-->
+    <update id="updateHate" parameterType="cn.zcbigdata.mybits_demo.entity.Hate">
+        UPDATE hate
+        SET user_id = #{userId},dp_id = #{dpId}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询-->
+    <select id="selectHateAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT *
+        FROM hate LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM hate;
+    </select>
+
+    <!--根据id获取信息-->
+    <select id="selectHateById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT *
+        FROM hate
+        WHERE id = #{id};
+    </select>
+
+    <insert id="dishesBad" parameterType="map">
+        INSERT INTO `hate` (`user_id`, `dp_id`)
+        VALUES (#{userId}, #{dpId});
+    </insert>
+
+    <update id="updateDishesBadNumber" parameterType="map">
+        UPDATE `dishes`
+        SET `bad_number` = `bad_number` + 1
+        WHERE `id` = #{dpId}
+    </update>
+
+    <delete id="dishesBadNo" parameterType="map">
+        DELETE
+        FROM `hate`
+        WHERE user_id = #{userId} and dp_id = #{dpId};
+    </delete>
+
+    <update id="updateDishesBadNumberNo" parameterType="map">
+        UPDATE `dishes`
+        SET `bad_number` = `bad_number` - 1
+        WHERE `id` = #{dpId}
+    </update>
+
+    <select id="isDishesHate" parameterType="map" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM `hate`
+        WHERE user_id = #{userId} and dp_id = #{dpId};
+    </select>
+
+</mapper>

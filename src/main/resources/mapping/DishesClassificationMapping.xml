@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zcbigdata.mybits_demo.mapper.DishesClassificationMapper">
+
+    <resultMap id="BaseResultMap" type="cn.zcbigdata.mybits_demo.entity.DishesClassification">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="dishes_id" jdbcType="INTEGER" property="dishesId"/>
+        <result column="classification_id" jdbcType="INTEGER" property="classificationId"/>
+    </resultMap>
+
+    <!--添加-->
+    <insert id="addDishesClassification" keyProperty="id" useGeneratedKeys="true"
+            parameterType="cn.zcbigdata.mybits_demo.entity.DishesClassification">
+        INSERT INTO dishes_classification(dishes_id, classification_id)
+        VALUES (#{dishesId}, #{classificationId});
+    </insert>
+
+    <!--根据id删除-->
+    <delete id="deleteDishesClassificationById" parameterType="java.lang.Integer">
+        DELETE
+        FROM dishes_classification
+        WHERE id = #{id};
+    </delete>
+
+    <!--修改-->
+    <update id="updateDishesClassification" parameterType="cn.zcbigdata.mybits_demo.entity.DishesClassification">
+        UPDATE dishes_classification
+        SET dishes_id         = #{dishesId},
+            classification_id = #{classificationId}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询-->
+    <select id="selectDishesClassificationAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT *
+        FROM dishes_classification LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM dishes_classification;
+    </select>
+
+    <!--根据id获取信息-->
+    <select id="selectDishesClassificationById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT *
+        FROM dishes_classification
+        WHERE id = #{id};
+    </select>
+
+</mapper>

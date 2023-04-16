@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zcbigdata.mybits_demo.mapper.CommentMapper">
+
+    <resultMap id="BaseResultMap" type="cn.zcbigdata.mybits_demo.entity.Comment">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="dp_id" jdbcType="INTEGER" property="dpId"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+    </resultMap>
+
+    <resultMap id="BaseResultVoMap" type="cn.zcbigdata.mybits_demo.entity.vo.CommentVo">
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+    </resultMap>
+
+    <!--添加-->
+    <insert id="addComment" keyProperty="id" useGeneratedKeys="true"
+            parameterType="cn.zcbigdata.mybits_demo.entity.Comment">
+        INSERT INTO comment(user_id, dp_id, type, content)
+        VALUES (#{userId}, #{dpId}, #{type}, #{content});
+    </insert>
+
+    <!--根据id删除-->
+    <delete id="deleteCommentById" parameterType="java.lang.Integer">
+        DELETE
+        FROM comment
+        WHERE id = #{id};
+    </delete>
+
+    <!--修改-->
+    <update id="updateComment" parameterType="cn.zcbigdata.mybits_demo.entity.Comment">
+        UPDATE comment
+        SET user_id = #{userId},
+            dp_id   = #{dpId},
+            type    = #{type},
+            content = #{content}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询-->
+    <select id="selectCommentAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT *
+        FROM comment LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comment;
+    </select>
+
+    <!--根据id获取信息-->
+    <select id="selectCommentById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT *
+        FROM comment
+        WHERE id = #{id};
+    </select>
+
+    <select id="findCommentsByDishesId" parameterType="java.lang.Integer" resultMap="BaseResultVoMap">
+        SELECT user_id, nick_name, content
+        FROM comment
+                 INNER JOIN USER ON COMMENT.user_id = USER.id
+        WHERE dp_id = #{dishesId}
+          and type = 0;
+    </select>
+
+    <select id="findCommentsByPostId" parameterType="java.lang.Integer" resultMap="BaseResultVoMap">
+        SELECT *
+        FROM comment
+                 INNER JOIN USER ON COMMENT.user_id = USER.id
+        WHERE dp_id = #{PostId}
+          and type = 1;
+    </select>
+
+    <insert id="dishesComment" parameterType="map">
+        INSERT INTO `comment` (`user_id`, `dp_id`, `type`, `content`)
+        VALUES (#{userId}, #{dpId}, 0, #{content});
+    </insert>
+
+    <update id="updateDishesCommentNumber" parameterType="map">
+        UPDATE `dishes`
+        SET `comment_number` = `comment_number` + 1
+        WHERE `id` = #{dpId}
+    </update>
+
+    <insert id="postComment" parameterType="map">
+        INSERT INTO `comment` (`user_id`, `dp_id`, `type`, `content`)
+        VALUES (#{userId}, #{dpId}, 1, #{content});
+    </insert>
+
+    <update id="updatePostCommentNumber" parameterType="map">
+        UPDATE `post`
+        SET `comment_number` = `comment_number` + 1
+        WHERE `id` = #{dpId}
+    </update>
+
+</mapper>

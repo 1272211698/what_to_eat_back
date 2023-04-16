@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zcbigdata.mybits_demo.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="cn.zcbigdata.mybits_demo.entity.User">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="nick_Name" jdbcType="VARCHAR" property="nickName"/>
+    </resultMap>
+
+    <!--根据传入的userName和password与数据库进行比对，返回User对象-->
+    <select id="userLogin" resultMap="BaseResultMap" parameterType="cn.zcbigdata.mybits_demo.entity.User">
+        SELECT *
+        FROM user
+        WHERE user_name = #{userName}
+          AND password = #{password};
+    </select>
+
+    <!--添加-->
+    <insert id="addUser" keyProperty="id" useGeneratedKeys="true"
+            parameterType="cn.zcbigdata.mybits_demo.entity.User">
+        INSERT INTO user(user_name, nick_name, password)
+        VALUES (#{userName}, #{nickName},  #{password});
+    </insert>
+
+    <!--根据id删除-->
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        DELETE
+        FROM user
+        WHERE id = #{id};
+    </delete>
+
+    <!--修改-->
+    <update id="updateUser" parameterType="cn.zcbigdata.mybits_demo.entity.User">
+        UPDATE user
+        SET user_name = #{userName},
+            password = #{password},
+            nick_name = #{nickName}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询-->
+    <select id="selectUserAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT *
+        FROM user
+        LIMIT
+        #{startIndex},
+        #{pageSize};
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user;
+    </select>
+
+    <!--根据id获取信息-->
+    <select id="selectUserById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT *
+        FROM user
+        WHERE id = #{id};
+    </select>
+
+</mapper>

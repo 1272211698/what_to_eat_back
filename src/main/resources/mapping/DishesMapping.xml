@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zcbigdata.mybits_demo.mapper.DishesMapper">
+
+    <resultMap id="BaseResultMap" type="cn.zcbigdata.mybits_demo.entity.Dishes">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="link" jdbcType="VARCHAR" property="link"/>
+        <result column="good_number" jdbcType="INTEGER" property="goodNumber"/>
+        <result column="bad_number" jdbcType="INTEGER" property="badNumber"/>
+        <result column="collect_number" jdbcType="INTEGER" property="collectNumber"/>
+        <result column="comment_number" jdbcType="INTEGER" property="commentNumber"/>
+        <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
+    </resultMap>
+
+    <!--添加-->
+    <insert id="addDishes" keyProperty="id" useGeneratedKeys="true"
+            parameterType="cn.zcbigdata.mybits_demo.entity.Dishes">
+        INSERT INTO dishes(name, price, description, link)
+        VALUES (#{name}, #{price}, #{description}, #{link});
+    </insert>
+
+    <!--根据id删除-->
+    <delete id="deleteDishesById" parameterType="java.lang.Integer">
+        DELETE
+        FROM dishes
+        WHERE id = #{id};
+    </delete>
+
+    <!--修改-->
+    <update id="updateDishes" parameterType="cn.zcbigdata.mybits_demo.entity.Dishes">
+        UPDATE dishes
+        SET name           = #{name},
+            price          = #{price},
+            description    = #{description},
+            good_number    = #{goodNumber},
+            bad_number     = #{badNumber},
+            collect_number = #{collectNumber},
+            link           = #{link}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询-->
+    <select id="selectDishesAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT *
+        FROM dishes LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM dishes;
+    </select>
+
+    <!--根据id获取信息-->
+    <select id="selectDishesById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT *
+        FROM dishes
+        WHERE id = #{id};
+    </select>
+
+    <select id="selectDishesByClassification" parameterType="cn.zcbigdata.mybits_demo.entity.vo.ClassificationIds" resultMap="BaseResultMap">
+        SELECT *
+        FROM dishes
+        WHERE id IN (
+        SELECT dishes_id
+        FROM dishes_classification
+        WHERE classification_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY dishes_id
+        HAVING COUNT(DISTINCT classification_id) = #{count}
+        )
+    </select>
+
+    <select id="selectDishesByName" parameterType="java.lang.String"
+            resultType="cn.zcbigdata.mybits_demo.entity.Dishes">
+        SELECT *
+        FROM dishes
+        WHERE name LIKE CONCAT('%', #{name}, '%')
+    </select>
+
+    <select id="selectLikeByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT dishes.*
+        FROM `like`
+                 INNER JOIN dishes on `like`.dp_id = dishes.id
+        WHERE user_id = #{id}
+          and type = 0;
+    </select>
+
+    <select id="selectHateByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT dishes.*
+        FROM `hate`
+                 INNER JOIN dishes on `hate`.dp_id = dishes.id
+        WHERE user_id = #{id};
+    </select>
+
+    <select id="selectCollectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT dishes.*
+        FROM `collect`
+                 INNER JOIN dishes on `collect`.dp_id = dishes.id
+        WHERE user_id = #{id}
+          and type = 0;
+    </select>
+
+</mapper>

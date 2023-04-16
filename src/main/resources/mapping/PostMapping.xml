@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zcbigdata.mybits_demo.mapper.PostMapper">
+
+    <resultMap id="BaseResultMap" type="cn.zcbigdata.mybits_demo.entity.Post">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="link" jdbcType="VARCHAR" property="link"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="like_number" jdbcType="INTEGER" property="likeNumber"/>
+        <result column="collect_number" jdbcType="INTEGER" property="collectNumber"/>
+        <result column="comment_number" jdbcType="INTEGER" property="commentNumber"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="dishes_id" jdbcType="INTEGER" property="dishesId"/>
+    </resultMap>
+
+    <resultMap id="BaseResultVoMap" type="cn.zcbigdata.mybits_demo.entity.vo.PostVo">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="link" jdbcType="VARCHAR" property="link"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="like_number" jdbcType="INTEGER" property="likeNumber"/>
+        <result column="collect_number" jdbcType="INTEGER" property="collectNumber"/>
+        <result column="comment_number" jdbcType="INTEGER" property="commentNumber"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="dishes_id" jdbcType="INTEGER" property="dishesId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+    </resultMap>
+
+    <!--添加-->
+    <insert id="addPost" keyProperty="id" useGeneratedKeys="true"
+            parameterType="cn.zcbigdata.mybits_demo.entity.Post">
+        INSERT INTO post(description, link, type, user_id, dishes_id)
+        VALUES (#{description},
+                #{link},
+                #{type},
+                #{userId},
+                #{dishesId});
+    </insert>
+
+    <!--根据id删除-->
+    <delete id="deletePostById" parameterType="java.lang.Integer">
+        DELETE
+        FROM post
+        WHERE id = #{id};
+    </delete>
+
+    <!--修改-->
+    <update id="updatePost" parameterType="cn.zcbigdata.mybits_demo.entity.Post">
+        UPDATE post
+        SET description    = #{description},
+            link           = #{link},
+            type           = #{type},
+            like_number    = #{likeNumber},
+            collect_number = #{collectNumber},
+            comment_number = #{commentNumber},
+            user_id        = #{userId},
+            dishes_id      = #{dishesId}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询-->
+    <select id="selectPostAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT *
+        FROM post LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="selectPostAllVo" resultMap="BaseResultVoMap" parameterType="map">
+        SELECT post.*, name, nick_name
+        FROM post
+                 INNER JOIN user on post.user_id = user.id
+                 INNER JOIN dishes on post.dishes_id = dishes.id LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM post;
+    </select>
+
+    <!--根据id获取信息-->
+    <select id="selectPostById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT *
+        FROM post
+        WHERE id = #{id};
+    </select>
+
+    <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultVoMap">
+        SELECT post.*, name, nick_name
+        FROM post
+                 INNER JOIN user on post.user_id = user.id
+                 INNER JOIN dishes on post.dishes_id = dishes.id
+        where user_id = #{id};
+    </select>
+
+    <select id="selectLikeByUserId" parameterType="java.lang.Integer" resultMap="BaseResultVoMap">
+        SELECT post.*,
+               name,
+               nick_name
+        FROM `like`
+                 INNER JOIN post ON `like`.dp_id = post.id
+                 INNER JOIN USER ON post.user_id = USER.id
+                 INNER JOIN dishes ON post.dishes_id = dishes.id
+        WHERE `like`.user_id = #{id}
+          AND `like`.type = 1;
+    </select>
+
+    <select id="selectCollectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultVoMap">
+        SELECT post.*,
+               name,
+               nick_name
+        FROM `collect`
+                 INNER JOIN post ON `collect`.dp_id = post.id
+                 INNER JOIN USER ON post.user_id = USER.id
+                 INNER JOIN dishes ON post.dishes_id = dishes.id
+        WHERE `collect`.user_id = #{id}
+          AND `collect`.type = 1;
+    </select>
+</mapper>

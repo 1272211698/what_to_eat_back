@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.zcbigdata.mybits_demo.mapper.ClassificationMapper">
+
+    <resultMap id="BaseResultMap" type="cn.zcbigdata.mybits_demo.entity.Classification">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+    </resultMap>
+
+    <!--添加-->
+    <insert id="addClassification" keyProperty="id" useGeneratedKeys="true"
+            parameterType="cn.zcbigdata.mybits_demo.entity.Classification">
+        INSERT INTO classification(content)
+        VALUES (#{content});
+    </insert>
+
+    <!--根据id删除-->
+    <delete id="deleteClassificationById" parameterType="java.lang.Integer">
+        DELETE
+        FROM classification
+        WHERE id = #{id};
+    </delete>
+
+    <!--修改-->
+    <update id="updateClassification" parameterType="cn.zcbigdata.mybits_demo.entity.Classification">
+        UPDATE classification
+        SET content = #{content}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询-->
+    <select id="selectClassificationAll" resultMap="BaseResultMap" parameterType="map">
+        SELECT *
+        FROM classification LIMIT #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM classification;
+    </select>
+
+    <!--根据id获取信息-->
+    <select id="selectClassificationById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT *
+        FROM classification
+        WHERE id = #{id};
+    </select>
+
+</mapper>
